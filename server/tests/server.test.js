@@ -5,8 +5,17 @@ const {app} = require('./../server')
 const {Todo} = require('./../models/Todo')
 
 
+const toDos = [{
+	text: "First test seed"
+}, {
+	text: "Second test seed"
+}];
+
+
 beforeEach((done)=>{
-	Todo.remove({}).then(()=>done());
+	Todo.remove({}).then(()=>{
+		return Todo.insertMany(toDos);
+	}).then(()=>done());
 })
 
 describe('POST /todos route', ()=>{
@@ -24,7 +33,7 @@ describe('POST /todos route', ()=>{
 				return done(err);
 			}
 
-			Todo.find().then((todos)=>{
+			Todo.find({text}).then((todos)=>{
 				expect(todos.length).toBe(1);
 				expect(todos[0].text).toBe(text);
 				done();
@@ -42,11 +51,23 @@ describe('POST /todos route', ()=>{
 				return done(err);
 			}
 			Todo.find().then((found)=>{
-				expect(found.length).toBe(0);
-	
+				expect(found.length).toBe(toDos.length);
+
 				done();
 			}).catch(e=>done(e));
 
 		})
 	})	
+});
+
+describe('GET /todos route', ()=>{
+	it('should return all todos', (done)=>{
+		request(app)
+		.get('/todos')
+		.expect(200)
+		.expect((res)=>{
+			expect(res.body.todo.length).toBe(2);
+		})
+		.end(done);
+	})
 })

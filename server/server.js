@@ -17,7 +17,7 @@ app.post('/todos', (req, res)=>{
 		res.send(doc);
 	}, (e)=>{
 		res.status(400).send(e);
-	})
+	});
 	
 });
 
@@ -26,7 +26,7 @@ app.get('/todos', (req,res)=>{
 		res.send({todo});
 	}, (e)=> {
 		res.status(400).send(e);
-	})
+	});
 });
 
 app.listen(3000, ()=>{
