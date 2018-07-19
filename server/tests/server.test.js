@@ -11,7 +11,9 @@ const toDos = [{
 	text: "First test seed"
 }, {
 	_id: new ObjectID(),
-	text: "Second test seed"
+	text: "Second test seed",
+	completed: true,
+	completedAt: 333
 }];
 
 
@@ -139,3 +141,37 @@ describe('DELETE /todos/:id', ()=>{
 
 
 });
+
+describe('PATCH /todos/:id', ()=>{
+	it('should update the todo', (done)=>{
+		var testText = 'im a test case for patch method!';
+		var testID = toDos[0]._id.toHexString();
+
+		request(app)
+			.patch(`/todos/${testID}`)
+			.send({
+				text: testText,
+				completed: true
+			})
+			.expect(200)
+			.expect((res)=>{
+				expect(res.body.todo.text).toBe(testText);
+				expect(res.body.todo.completedAt).toBeA('number');
+				expect(res.body.todo.completed).toBe(true);
+			}).end(done);
+	});
+
+	it('should clear completedAt when todo is not completed', (done)=>{
+		var testID = toDos[1]._id.toHexString();
+
+		request(app)
+			.patch(`/todos/${testID}`)
+			.send({
+				completed: false
+			})
+			.expect((res)=>{
+				expect(res.body.todo.completedAt).toBe(null);
+			}).end(done);
+
+	})
+})
